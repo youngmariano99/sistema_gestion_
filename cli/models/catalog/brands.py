@@ -1,5 +1,5 @@
 from models.database import BaseModel
-from pewee import Autofield, Charfield
+from peewee import *
 
 class Brand(BaseModel):
     brand_id = AutoField(primary_key=True)

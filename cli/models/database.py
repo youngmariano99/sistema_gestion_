@@ -2,6 +2,7 @@
 from peewee import MySQLDatabase
 from dotenv import load_dotenv
 import os
+from peewee import Model
 
 # Carga las variables del archivo .env
 load_dotenv()

@@ -3,6 +3,7 @@ from peewee import *
 from models.people.suppliers import Supplier
 from models.transaction.payments import PaymentMethod
 from models.catalog.products import Product
+from datetime import datetime  # Para usar datetime.now()
 
 class Purchase(BaseModel):
     purchase_id = AutoField(primary_key=True)

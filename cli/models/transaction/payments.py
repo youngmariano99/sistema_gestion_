@@ -1,5 +1,5 @@
 from models.database import BaseModel
-from pewee import *
+from peewee import *
 
 class PaymentMethod(BaseModel):
     payment_method_id = AutoField(primary_key=True)

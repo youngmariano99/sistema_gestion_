@@ -1,7 +1,9 @@
-from models.database import Basemodel
-from pewee import *
+from models.database import BaseModel
+from peewee import *
 from models.people.clients import Client
 from models.transaction.payments import PaymentMethod
+from models.catalog.products import Product
+from datetime import datetime  # Para usar datetime.now()
 
 class Sale(BaseModel):
     sale_id = AutoField(primary_key=True)

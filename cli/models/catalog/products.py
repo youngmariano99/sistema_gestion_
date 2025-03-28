@@ -1,5 +1,5 @@
 from models.database import BaseModel
-from pewee import *
+from peewee import *
 from models.catalog.categories import Category
 from models.catalog.brands import Brand
 

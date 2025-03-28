@@ -1,11 +1,13 @@
-#PROGRAMA PRINCIPAL CLI
-from models.database import db
+from models import database, catalog, inventory,people,transaction  # Importa lo que necesites
+from controllers.intentory_ops import init_db
+from menus import main_menu
 
-
-def init_db():
-    db.connect()
-    # db.create_tables([User])  # Solo si necesitas crear tablas
+def main():
+    init_db()  # Verifica conexión
+    try:
+        main_menu()
+    except KeyboardInterrupt:
+        print("\nOperación cancelada")  # Implementa esto en operations.py
 
 if __name__ == '__main__':
-    init_db()
-    
+    main()
