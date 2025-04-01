@@ -1,7 +1,7 @@
 from models.database import BaseModel
 from peewee import *
 
-class Client(BaseModel):
+class Clients(BaseModel):
     client_id = AutoField(primary_key=True)
     name = CharField(max_length=50, null=False)
     surname = CharField(max_length=50, null=False)

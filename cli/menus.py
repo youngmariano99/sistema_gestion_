@@ -5,7 +5,7 @@ from typing import Optional
 from colorama import Fore, Style, init
 from enum import Enum
 from utils.views import Color, clear_console, show_loading , get_valid_input, draw_menu_box, MenuType
-from controllers.intentory_ops import show_products
+from controllers.intentory_ops import show_products, register_product, stock_refresh
 # Inicializar colorama (para colores multiplataforma)
 init(autoreset=True)
 
@@ -44,9 +44,9 @@ def inventory_menu():
         clear_console()
         draw_menu_box("GESTIÓN DE INVENTARIO", MenuType.INVENTORY)
         
-        print(f"{Color.SUCCESS}1. 🆕 Registrar nuevo producto")
+        print(f"{Color.SUCCESS}1. 🆕 Registrar nuevo producto") #COMPLETADA (A MEJORAR)
         print(f"{Color.SUCCESS}2. 🔍 Buscar producto")
-        print(f"{Color.SUCCESS}3. 📝 Listar todos los productos")
+        print(f"{Color.SUCCESS}3. 📝 Listar todos los productos") #COMPLETADA (A MEJORAR)
         print(f"{Color.SUCCESS}4. 📦 Ajustar niveles de stock")
         print(f"{Color.SUCCESS}5. 🏷️ Actualizar precios")
         print(f"{Color.PRIMARY}0. ↩ Volver al menú principal\n")
@@ -57,15 +57,21 @@ def inventory_menu():
             break
         elif choice == 1:
             show_loading("Cargando módulo de registro")
-            # register_product()
+            register_product()
         elif choice == 2:
             show_loading("Buscando productos")
             # search_products()
         elif choice == 3:
-            opción_elegida = 0
+            opción_elegida = ""
             show_loading("Mostrando productos")
             show_products()
-            opción_elegida =input("Aprieta enter para continuar...")
+            opción_elegida = input("Aprieta enter para continuar...")
+            show_loading("Volviendo a menú de inventario")
+        elif choice ==4:
+            opción_elegida = ""
+            show_loading("Cargando módulo de ajuste de stock")
+            stock_refresh()
+            opción_elegida = input("Aprieta enter para continuar...")
             show_loading("Volviendo a menú de inventario")
 
 

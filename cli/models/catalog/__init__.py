@@ -1,6 +1,6 @@
-from .brands import Brand
+from .brands import Brands
 from .categories import Category
-from .products import Product
-from .brands_products import BrandProduct  # Tabla puente
+from .products import Products
+from .brands_products import BrandsProducts  # Tabla puente
 
-__all__ = ['Brand', 'Category', 'Product', 'BrandProduct', 'Brand']
+__all__ = ['Brands', 'Category', 'Products', 'BrandsProducts']

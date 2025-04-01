@@ -1,3 +1,3 @@
-from .stock_movements import StockMovement, StockMovementDetail
+from .stock_movements import StockMovements, StockMovementDetails
 
-__all__ = ['StockMovement', 'StockMovementDetail']
+__all__ = ['StockMovements', 'StockMovementDetails']

@@ -1,4 +1,4 @@
-from .clients import Client
-from .suppliers import Supplier
+from .clients import Clients
+from .suppliers import Suppliers
 
-__all__ = ['Client', 'Supplier']
+__all__ = ['Clients', 'Suppliers']
