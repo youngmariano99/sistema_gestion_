@@ -1,10 +1,10 @@
 #FUNCIONES CRUD Y LÓGICA DE NEGOCIO
 from models.database import db
-from models.catalog import BrandsProducts, Products, Category
+from models.catalog import BrandsProducts, Products, Category, Brands
 from ui_helpers.selectors import select_category, select_brands
 from utils.views import clear_console, draw_menu_box, MenuType, Color, show_loading
-from peewee import DoesNotExist
-
+from peewee import DoesNotExist, prefetch, JOIN
+from tabulate import tabulate
 
 
 #FUNCIÓN PARA PROBAR LA CONEXIÓN DE LA BASE DE DATOS
@@ -17,35 +17,60 @@ def init_db():
         exit(1)
 
 #FUNCIÓN PARA BUSCAR PRODUCTOS
-def search_products(): 
+def search_products():
     nombre_producto = input("Coloque el nombre del producto que quiera ver: ")
     
-    # Realizar la consulta (búsqueda insensible a mayúsculas/minúsculas)
-    query = Products.select().where(Products.name ** f"%{nombre_producto}%")
+    # Consulta optimizada con prefetch
+    query = (Products
+             .select(Products, Category)
+             .join(Category, JOIN.LEFT_OUTER)
+             .where(Products.name ** f"%{nombre_producto}%"))
     
-    # Obtener todos los resultados
-    resultados = list(query)
+    productos_con_marcas = prefetch(query, BrandsProducts, Brands)
     
-    if not resultados:
+    if not productos_con_marcas:
         print(f"\n❌ No se encontraron productos con el nombre: '{nombre_producto}'")
         return
     
+    # Preparar datos para la tabla
+    table_data = []
+    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia", "Categoría", "Marcas"]
+    
+    for producto in productos_con_marcas:
+        marcas = ', '.join([bp.brands.name for bp in producto.brandsproducts_set]) if producto.brandsproducts_set else 'Sin marcas'
+        
+        table_data.append([
+            producto.product_id,
+            producto.name,
+            producto.stock,
+            f"${producto.price:.2f}",
+            f"${producto.cost:.2f}",
+            producto.price - producto.cost,
+            producto.category.name if producto.category else 'Sin categoría',
+            marcas
+        ])
+    
+    # Mostrar tabla
     print(f"\n🔍 Resultados para '{nombre_producto}':")
-    for producto in resultados:
-        print(f"\nID: {producto.product_id}")
-        print(f"Nombre: {producto.name}")
-        print(f"Stock: {producto.stock}")
-        print(f"Precio: ${producto.price:.2f}")
-        print(f"Categoría: {producto.category.name if producto.category else 'Sin categoría'}")
+    print(tabulate(table_data, headers=headers, tablefmt="grid"))
     
-    
-    
-
 #FUNCIÓN PARA MOSTRAR TODOS LOS PRODUCTOS
 def show_products():
+    table_data = []
+    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia"]
+
     products = Products.select()  # Usa un nombre diferente para la variable
     for product in products:
-        print(product.name)
+        table_data.append([
+            product.product_id,
+            product.name,
+            product.stock,
+            f"${product.price:.2f}",
+            f"${product.cost:.2f}",
+            product.price - product.cost
+        ])
+    
+    print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
 #FUNCIÓN PARA REGISTRAR PRODUCTO
 def register_product():

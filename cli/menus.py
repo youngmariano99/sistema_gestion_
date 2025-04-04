@@ -47,8 +47,7 @@ def inventory_menu():
         print(f"{Color.SUCCESS}1. 🆕 Registrar nuevo producto") #COMPLETADA (A MEJORAR)
         print(f"{Color.SUCCESS}2. 🔍 Buscar producto por nombre")
         print(f"{Color.SUCCESS}3. 📝 Listar todos los productos") #COMPLETADA (A MEJORAR)
-        print(f"{Color.SUCCESS}4. 📦 Ajustar niveles de stock") #COMPLETADA (A MEJORAR)
-        print(f"{Color.SUCCESS}5. 🏷️ Editar Producto") #COMPLETADA (A MEJORAR)
+        print(f"{Color.SUCCESS}4. 📦 Editar Productos") #COMPLETADA (A MEJORAR)
         print(f"{Color.PRIMARY}0. ↩ Volver al menú principal\n")
         
         choice = get_valid_input("► Seleccione una opción (0-5):", 0, 5)
