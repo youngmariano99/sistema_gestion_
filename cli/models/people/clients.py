@@ -7,3 +7,5 @@ class Clients(BaseModel):
     surname = CharField(max_length=50, null=False)
     phone = CharField(max_length=20, unique=True, null=True)
     email = CharField(max_length=100, unique=True, null=True)
+    class Meta:
+        table_name = 'clients'

@@ -1,9 +1,10 @@
 #FUNCIONES CRUD Y LÓGICA DE NEGOCIO
 from models.database import db
 from models.catalog import BrandsProducts, Products, Category, Brands
-from ui_helpers.selectors import select_category, select_brands
+from ui_helpers.selectors import select_category, select_brands, select_unit_type
 from utils.views import clear_console, draw_menu_box, MenuType, Color, show_loading
 from peewee import DoesNotExist, prefetch, JOIN
+from datetime import datetime
 from tabulate import tabulate
 
 
@@ -34,43 +35,65 @@ def search_products():
     
     # Preparar datos para la tabla
     table_data = []
-    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia", "Categoría", "Marcas"]
+    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia", "Categoría", "Marcas", "Min Stock", "Expiración", "Unidad"]
     
     for producto in productos_con_marcas:
         marcas = ', '.join([bp.brands.name for bp in producto.brandsproducts_set]) if producto.brandsproducts_set else 'Sin marcas'
         
-        table_data.append([
-            producto.product_id,
-            producto.name,
-            producto.stock,
-            f"${producto.price:.2f}",
-            f"${producto.cost:.2f}",
-            producto.price - producto.cost,
-            producto.category.name if producto.category else 'Sin categoría',
-            marcas
+        if(producto.is_active == 1):
+            table_data.append([
+                producto.product_id,
+                producto.name,
+                producto.stock,
+                f"${producto.price:.2f}",
+                f"${producto.cost:.2f}",
+                producto.price - producto.cost,
+                producto.category.name if producto.category else 'Sin categoría',
+                marcas,
+                producto.min_stock,
+                producto.expiration_date,
+                producto.unit
         ])
+            print(f"\n🔍 Resultados para '{nombre_producto}':")
+            print(tabulate(table_data, headers=headers, tablefmt="grid"))
+        
     
     # Mostrar tabla
-    print(f"\n🔍 Resultados para '{nombre_producto}':")
-    print(tabulate(table_data, headers=headers, tablefmt="grid"))
+    
     
 #FUNCIÓN PARA MOSTRAR TODOS LOS PRODUCTOS
 def show_products():
-    table_data = []
-    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia"]
-
-    products = Products.select()  # Usa un nombre diferente para la variable
-    for product in products:
-        table_data.append([
-            product.product_id,
-            product.name,
-            product.stock,
-            f"${product.price:.2f}",
-            f"${product.cost:.2f}",
-            product.price - product.cost
-        ])
+    query = (Products
+             .select(Products, Category)
+             .join(Category, JOIN.LEFT_OUTER)
+             )
     
-    print(tabulate(table_data, headers=headers, tablefmt="grid"))
+    productos_con_marcas = prefetch(query, BrandsProducts, Brands)
+    
+ 
+    # Preparar datos para la tabla
+    table_data = []
+    headers = ["ID", "Nombre", "Stock", "Precio","Costo", "Ganancia", "Categoría", "Marcas", "Min Stock", "Expiración", "Unidad"]
+    
+    for producto in productos_con_marcas:
+        marcas = ', '.join([bp.brands.name for bp in producto.brandsproducts_set]) if producto.brandsproducts_set else 'Sin marcas'
+        
+        if(producto.is_active == 1):
+            table_data.append([
+                producto.product_id,
+                producto.name,
+                producto.stock,
+                f"${producto.price:.2f}",
+                f"${producto.cost:.2f}",
+                producto.price - producto.cost,
+                producto.category.name if producto.category else 'Sin categoría',
+                marcas,
+                producto.min_stock,
+                producto.expiration_date,
+                producto.unit
+        ])
+            print(f"\n🔍 Resultados")
+            print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
 #FUNCIÓN PARA REGISTRAR PRODUCTO
 def register_product():
@@ -80,27 +103,40 @@ def register_product():
     
     # Datos básicos
     name = input("Ingresa el nombre del producto: ")
-    
+    stock = int(input("Ingresa el stock (0 default): ") or 0)
+    price = float(input("Ingresa el precio (Ej: 999.99): ").replace(',', '.'))
+    cost = float(input("Ingresa el costo (Ej: 999.99): ").replace(',', '.'))
+    min_stock = int(input("Ingresa el Stock minimo(default = 0): "))
+    expiration_date =  input("Ingresa la fecha (DD-MM-YYYY): ")
     try:
-        stock = int(input("Ingresa el stock (0 default): ") or 0)
-        price = float(input("Ingresa el precio (Ej: 999.99): ").replace(',', '.'))
-        cost = float(input("Ingresa el costo (Ej: 999.99): ").replace(',', '.'))
+        # Convertir el formato de DD-MM-YYYY a YYYY-MM-DD
+        fecha_convertida = datetime.strptime(expiration_date, '%d-%m-%Y')
+
+
     except ValueError:
         print("¡Error en los datos numéricos! Intenta nuevamente.")
-        return
-    
+       
+    #Seleccionar unidad
+    unit_type = select_unit_type()
+
+    #Seleccionar la categoria
     category = select_category()
     if category == None:  # Si el usuario canceló o no hay categorías
         print("\n⚠️ Operación cancelada. No se ha seleccionado categoría.")
         return  # Salimos de la función
+    
+    #Seleccionar la marca
     selected_brands = select_brands()
     if selected_brands == None:  # Si el usuario canceló o no hay categorías
         print("\n⚠️ Operación cancelada. No se ha seleccionado categoría.")
         return  # Salimos de la función
-    print(f"\nResumen: {name} | Stock: {stock} | Precio: ${price:.2f} | Costo: ${cost:.2f}")
+    
+    #Resumen del producto a crear
+    print(f"\nResumen: {name} | Stock: {stock} | Precio: ${price:.2f} | Costo: ${cost:.2f} | Minimo Stock: ${min_stock} | Vencimiento: ${expiration_date} | Unidad: {unit_type}")
     print(f"Categoría: {category.name}")
     print("Marcas:", ", ".join([b.name for b in selected_brands]))
     
+    #Confirmación de la creación
     confirmar = input("\n¿Confirmar registro? (s/n): ").lower()
 
     if confirmar == 's':
@@ -109,7 +145,10 @@ def register_product():
             stock=stock,
             price=price,
             cost=cost,
-            category=category
+            category=category,
+            min_stock=min_stock,
+            expiration_date=fecha_convertida,
+            unit=unit_type
         )
     for brand in selected_brands:
         BrandsProducts.create(

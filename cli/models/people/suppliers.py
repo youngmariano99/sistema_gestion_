@@ -6,3 +6,5 @@ class Suppliers(BaseModel):
     name = CharField(max_length=100, null=False)
     description = CharField(max_length=255, null=True)
     phone = CharField(max_length=20, null=True)
+    class Meta:
+        table_name = 'suppliers'

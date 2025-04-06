@@ -45,7 +45,7 @@ def inventory_menu():
         draw_menu_box("GESTIÓN DE INVENTARIO", MenuType.INVENTORY)
         
         print(f"{Color.SUCCESS}1. 🆕 Registrar nuevo producto") #COMPLETADA (A MEJORAR)
-        print(f"{Color.SUCCESS}2. 🔍 Buscar producto por nombre")
+        print(f"{Color.SUCCESS}2. 🔍 Buscar producto por nombre") #COMPLETADA (A MEJORAR)
         print(f"{Color.SUCCESS}3. 📝 Listar todos los productos") #COMPLETADA (A MEJORAR)
         print(f"{Color.SUCCESS}4. 📦 Editar Productos") #COMPLETADA (A MEJORAR)
         print(f"{Color.PRIMARY}0. ↩ Volver al menú principal\n")

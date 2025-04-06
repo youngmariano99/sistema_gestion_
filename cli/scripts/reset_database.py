@@ -6,6 +6,7 @@ from models.database import db
 from models.catalog.products import  Products
 from models.catalog.brands import Brands
 from models.catalog.brands_products import BrandsProducts
+from models.catalog.categories import Category
 #ANTES DEL RESET HACER UN BACKUP:
 # mysqldump -u root -p sistema_gestion_may > "backup_sistema_almacen_$(Get-Date -Format 'yyyyMMdd').sql" -> en la consonla
 
@@ -22,9 +23,10 @@ def reset_data():
         db.execute_sql('SET FOREIGN_KEY_CHECKS=0;')
         
         # Borrar datos en orden seguro
-        BrandsProducts.delete().execute()  # Primero relaciones
-        Products.delete().execute()
-        Brands.delete().execute()
+        # BrandsProducts.delete().execute()  # Primero relaciones
+        # Products.delete().execute()
+        # Brands.delete().execute()
+        Category.delete().execute()
         # Añade otras tablas si es necesario
 
         # Reactivar FKs
