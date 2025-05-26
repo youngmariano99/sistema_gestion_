@@ -6,6 +6,7 @@ from colorama import Fore, Style, init
 from enum import Enum
 from utils.views import Color, clear_console, show_loading , get_valid_input, draw_menu_box, MenuType
 from controllers.intentory_ops import show_products, register_product, edit_product, search_products
+# from controllers.transactions_ops import register_sale
 # Inicializar colorama (para colores multiplataforma)
 init(autoreset=True)
 
@@ -74,7 +75,6 @@ def inventory_menu():
             edit_product()
             opción_elegida = input("Aprieta enter para continuar...")
             show_loading("Volviendo a menú de inventario")
-
 
 
 def people_menu():
